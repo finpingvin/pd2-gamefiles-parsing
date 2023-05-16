@@ -207,12 +207,14 @@ func getMapsFromMisc(miscItems []map[string]string) map[string]mapLevel {
 		"t2m": 2,
 		"t3m": 3,
 		"t4m": 4,
+		"t5m": 5,
 	}
 
 	for _, item := range miscItems {
 		t := item["type"]
 		spawnable := item["spawnable"]
-		if mapTier, ok := mapTiers[t]; ok && spawnable == "1" {
+		// The unique maps still have spawnable="0", so special case for them
+		if mapTier, ok := mapTiers[t]; ok && (spawnable == "1" || t == "t5m") {
 			mapLevels[item["len"]] = mapLevel{
 				DisplayName: item["*name"],
 				Tier:        mapTier,
