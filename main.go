@@ -13,13 +13,17 @@ import (
 )
 
 type monster struct {
-	DisplayName  string `json:"displayName"`
-	PhysRes      int    `json:"physRes"`
-	MagicRes     int    `json:"magicRes"`
-	FireRes      int    `json:"fireRes"`
-	LightningRes int    `json:"lightningRes"`
-	ColdRes      int    `json:"coldRes"`
-	PoisonRes    int    `json:"poisonRes"`
+	DisplayName     string `json:"displayName"`
+	PhysRes         int    `json:"physRes"`
+	MagicRes        int    `json:"magicRes"`
+	FireRes         int    `json:"fireRes"`
+	LightningRes    int    `json:"lightningRes"`
+	ColdRes         int    `json:"coldRes"`
+	PoisonRes       int    `json:"poisonRes"`
+	MinHpClosedBnet int    `json:"minHpClosedBnet"`
+	MaxHpClosedBnet int    `json:"maxHpClosedBnet"`
+	MinHpOpenBnet   int    `json:"minHpOpenBnet"`
+	MaxHpOpenBnet   int    `json:"maxHpOpenBnet"`
 }
 
 type mapLevel struct {
@@ -200,6 +204,18 @@ func readDataFile(filename string) []map[string]string {
 	return items
 }
 
+func groupMonsterLevelsById(monsterLevels []map[string]string) map[string]map[string]string {
+	monsterLevelsById := make(map[string]map[string]string)
+	for _, monsterLevel := range monsterLevels {
+		monsterLevelsById[monsterLevel["Level"]] = map[string]string{
+			"hpClosedBnet": monsterLevel["HP(H)"],
+			"hpOpenBnet":   monsterLevel["L-HP(H)"],
+		}
+	}
+
+	return monsterLevelsById
+}
+
 func getMapsFromMisc(miscItems []map[string]string) map[string]mapLevel {
 	mapLevels := make(map[string]mapLevel)
 	mapTiers := map[string]int{
@@ -233,7 +249,8 @@ func main() {
 	patchString := readTbl("./patchstring.tbl")
 	expansionString := readTbl("./expansionstring.tbl")
 
-	monsters := readDataFile("./Monstats.txt")
+	monsters := readDataFile("./MonStats.txt")
+	monsterLevels := groupMonsterLevelsById(readDataFile("./MonLvl.txt"))
 	misc := readDataFile("./Misc.txt")
 	levels := readDataFile("./Levels.txt")
 	mapLevels := getMapsFromMisc(misc)
@@ -299,14 +316,28 @@ func main() {
 					monsterName = m["NameStr"]
 				}
 
+				monsterLevel := monsterLevels[l["MonLvl3"]]
+				hpMultiplierClosedBnet, _ := strconv.Atoi(monsterLevel["hpClosedBnet"])
+				hpMultiplierOpenBnet, _ := strconv.Atoi(monsterLevel["hpOpenBnet"])
+				baseMinHp, _ := strconv.Atoi(m["minHP"])
+				baseMaxHp, _ := strconv.Atoi(m["maxHP"])
+				minHpClosedBnet := (hpMultiplierClosedBnet * baseMinHp) / 100
+				maxHpClosedBnet := (hpMultiplierClosedBnet * baseMaxHp) / 100
+				minHpOpenBnet := (hpMultiplierOpenBnet * baseMinHp) / 100
+				maxHpOpenBnet := (hpMultiplierOpenBnet * baseMaxHp) / 100
+
 				*ml.Monsters = append(*ml.Monsters, monster{
-					DisplayName:  monsterName,
-					PhysRes:      monsterPhysRes,
-					MagicRes:     monsterMagicRes,
-					FireRes:      monsterFireRes,
-					LightningRes: monsterLightningRes,
-					ColdRes:      monsterColdRes,
-					PoisonRes:    monsterPoisonRes,
+					DisplayName:     monsterName,
+					PhysRes:         monsterPhysRes,
+					MagicRes:        monsterMagicRes,
+					FireRes:         monsterFireRes,
+					LightningRes:    monsterLightningRes,
+					ColdRes:         monsterColdRes,
+					PoisonRes:       monsterPoisonRes,
+					MinHpClosedBnet: minHpClosedBnet,
+					MaxHpClosedBnet: maxHpClosedBnet,
+					MinHpOpenBnet:   minHpOpenBnet,
+					MaxHpOpenBnet:   maxHpOpenBnet,
 				})
 			}
 		}
