@@ -268,6 +268,7 @@ func main() {
 			if m["NameStr"] == "" {
 				continue
 			}
+
 			if l["mon1"] == m["Id"] ||
 				l["mon2"] == m["Id"] ||
 				l["mon3"] == m["Id"] ||
@@ -277,7 +278,12 @@ func main() {
 				l["mon7"] == m["Id"] ||
 				l["mon8"] == m["Id"] ||
 				l["mon9"] == m["Id"] ||
-				l["mon10"] == m["Id"] {
+				l["mon10"] == m["Id"] ||
+				l["mon11"] == m["Id"] ||
+				l["mon12"] == m["Id"] ||
+				l["mon13"] == m["Id"] ||
+				l["mon14"] == m["Id"] ||
+				l["mon15"] == m["Id"] {
 
 				monsterPhysRes, err := strconv.Atoi(m["ResDm(H)"])
 				if err != nil {
