@@ -322,11 +322,11 @@ func main() {
 					monsterName = m["NameStr"]
 				}
 
-				monsterLevel := monsterLevels[l["MonLvl3"]]
+				monsterLevel := monsterLevels[l["MonLvl3Ex"]]
 				hpMultiplierClosedBnet, _ := strconv.Atoi(monsterLevel["hpClosedBnet"])
 				hpMultiplierOpenBnet, _ := strconv.Atoi(monsterLevel["hpOpenBnet"])
-				baseMinHp, _ := strconv.Atoi(m["minHP"])
-				baseMaxHp, _ := strconv.Atoi(m["maxHP"])
+				baseMinHp, _ := strconv.Atoi(m["MinHP(H)"])
+				baseMaxHp, _ := strconv.Atoi(m["MaxHP(H)"])
 				minHpClosedBnet := (hpMultiplierClosedBnet * baseMinHp) / 100
 				maxHpClosedBnet := (hpMultiplierClosedBnet * baseMaxHp) / 100
 				minHpOpenBnet := (hpMultiplierOpenBnet * baseMinHp) / 100
